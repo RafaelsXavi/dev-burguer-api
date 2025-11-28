@@ -1,25 +1,35 @@
-/*
-
-    store -> criar um novo usuario
-    index -> listar varios usuarios
-    show -> listar um unico usuario
-    update -> atualizar um usuario
-    delete -> deletar um usuario
-
-
-
-*/
-
 import { v4 } from "uuid";
 import User from "../models/User.js";
-
+import * as Yup from "yup";
+import bcrypt from "bcrypt";
 
 class UserController {
-
-
     async store(request, response) {
+        const schema = Yup.object({
+            name: Yup.string().required(),
+            email: Yup.string().email().required(),
+            password: Yup.string().required().min(6),
+            admin: Yup.boolean().required(),
+        });
 
-        const { name, email, password_hash, admin } = request.body;
+        try {
+            schema.validateSync(request.body, { abortEarly: false, strict: true });
+        } catch (err) {
+            console.log(err);
+            return response.status(400).json({ error: "Validation fails", messages: err.errors });
+        }
+
+        const { name, email, password, admin } = request.body;
+
+        const existingUser = await User.findOne({
+            where: { email }
+        });
+
+        if (existingUser) {
+            return response.status(400).json({ error: "User already exists." });
+        }
+
+        const password_hash = await bcrypt.hash(password, 10);
 
         const user = await User.create({
             id: v4(),
@@ -30,16 +40,12 @@ class UserController {
         });
 
         return response.status(201).json({
-            
             id: user.id,
             name: user.name,
             email: user.email,
             admin: user.admin,
-
         });
-
     }
 }
 
-
-export default new UserController();
+export default UserController;
