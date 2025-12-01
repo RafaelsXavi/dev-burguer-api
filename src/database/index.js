@@ -1,8 +1,9 @@
 import { Sequelize } from "sequelize";
 import databaseConfig from "../config/database.cjs";
 import User from "../app/models/User.js";
+import Product from "../app/models/Product.js";
 
-const models = [User];
+const models = [User, Product];
 
 class Database {
   constructor() {
@@ -10,16 +11,7 @@ class Database {
   }
 
   init() {
-    const env = process.env.NODE_ENV || "development";
-    const config = databaseConfig[env];
-
-    this.connection = new Sequelize(
-      config.database,
-      config.username,
-      config.password,
-      config
-    );
-
+    this.connection = new Sequelize(databaseConfig);
     models.map((model) => model.init(this.connection));
   }
 }

@@ -1,6 +1,7 @@
 import { request } from 'express';
 import * as Yup from 'yup';
 import User from '../models/User.js';
+import bcrypt from 'bcrypt';
 
 
 class SessionController {
@@ -10,13 +11,18 @@ class SessionController {
       password: Yup.string().required().min(6),
     });
 
-    const isValide = await schema.isValid(request.body, { strict: true });
+    const isValide = await schema.isValid(request.body, {
+      abortEarly: false,
+      strict: true,
+    });
 
-    if (!isValide) {
+    const emailOurPasswordIncorrect = () => {
       return res
-      .status(400)
-      .json({ error: "Validation fails" });
+        .status(400)
+        .json({ error: "Validation fails" });
     }
+
+    if (!isValide) { emailOurPasswordIncorrect(); }
 
     const { email, password } = req.body;
 
@@ -25,17 +31,25 @@ class SessionController {
       where: { email }
     });
 
-    if (!existingUser) {
-      return res
-      .status(400)
-      .json({ error: "Validation fails" });
-    }
+    if (!existingUser) { emailOurPasswordIncorrect();}
 
 
-    
-    return res.status(200).json({ ok: true });
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      existingUser.password_hash
+    );
+
+    if (!isPasswordValid) {emailOurPasswordIncorrect(); }
+
+
+    return res.status(200).json({
+      id: existingUser.id,
+      name: existingUser.name,
+      email: existingUser.email,
+      admin: existingUser.admin,
+    });
 
   }
 }
 
-export default SessionController;
+export default new SessionController;
