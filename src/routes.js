@@ -3,7 +3,10 @@ import { createRequire } from 'module';
 import UserController from "./app/controllers/UserController.js";
 import SessionController from './app/controllers/SessionController.js';
 import ProductController from './app/controllers/ProductController.js';
+import CategoryController from './app/controllers/CategoryController.js';
 import multer from 'multer';
+import app from './app.js';
+import authMiddleware from './middlewares/auth.js';
 
 const require = createRequire(import.meta.url);
 const multerConfig = require('./config/multer.cjs');
@@ -16,9 +19,17 @@ routes.post('/users', UserController.store);
 
 routes.post('/sessions', SessionController.store);
 
+
+routes.use(authMiddleware);
+
+
 routes.post('/products',upload.single('file') , ProductController.store);
 
-routes.get('/products', ProductController.index);
+routes.get('/products',ProductController.index);
+
+routes.post('/categories', CategoryController.store);
+
+routes.get('/categories', CategoryController.index);
 
 export default routes;
 
