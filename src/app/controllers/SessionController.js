@@ -22,7 +22,7 @@ class SessionController {
         .json({ error: "Validation fails" });
     }
 
-    if (!isValide) { emailOurPasswordIncorrect(); }
+    if (!isValide) { return emailOurPasswordIncorrect(); }
 
     const { email, password } = req.body;
 
@@ -31,7 +31,7 @@ class SessionController {
       where: { email }
     });
 
-    if (!existingUser) { emailOurPasswordIncorrect();}
+    if (!existingUser) { return emailOurPasswordIncorrect();}
 
 
     const isPasswordValid = await bcrypt.compare(
@@ -39,7 +39,7 @@ class SessionController {
       existingUser.password_hash
     );
 
-    if (!isPasswordValid) {emailOurPasswordIncorrect(); }
+    if (!isPasswordValid) {return emailOurPasswordIncorrect(); }
 
 const token = jwt.sign({ id: existingUser.id}, authConfig.secret, 
   { expiresIn: authConfig.expiresIn},) 

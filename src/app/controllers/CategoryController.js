@@ -14,16 +14,18 @@ class CategoryController {
             console.log(err);
             return response.status(400).json({ error: "Validation fails", messages: err.errors });
         }
-        
 
-        const { name} = request.body
+        const userId = request.userId;
+
+        
+        const { name } = request.body
 
         const existingCategory = await Category.findOne({
             where: { name }
         })
 
         if (existingCategory) {
-            return response.status(400).json({ error: "Category already exists"});
+            return response.status(400).json({ error: "Category already exists" });
         }
 
 
@@ -34,13 +36,13 @@ class CategoryController {
         return response.status(201).json(newCategory);
 
     }
-async index(_request, response) {
-    
-    const categories = await Category.findAll();
+    async index(_request, response) {
 
-    
+        const categories = await Category.findAll();
 
-    return response.status(201).json(categories);
-}
+
+
+        return response.status(201).json(categories);
+    }
 }
 export default new CategoryController();
