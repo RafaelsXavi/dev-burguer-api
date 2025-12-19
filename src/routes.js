@@ -24,7 +24,18 @@ routes.post('/sessions', SessionController.store);
 routes.use(authMiddleware);
 
 
-routes.post('/products', adminMiddleware,upload.single('file'), ProductController.store);
+routes.post(
+    '/products',
+     adminMiddleware,
+     upload.single('file'), 
+     ProductController.store,
+    );
+routes.put(
+    '/products/:id',
+     adminMiddleware,
+     upload.single('file'), 
+     ProductController.update,
+    );
 
 routes.get('/products', ProductController.index);
 

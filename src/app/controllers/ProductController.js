@@ -6,8 +6,41 @@ class ProductController {
 
     async store(request, response) {
         const schema = Yup.object({
+            name: Yup.string().required(),
+            price: Yup.number().pequired(),
+            category_id: Yup.number().required(),
+            offer: Yup.boolean()
+
+        });
+
+        try {
+            schema.validateSync(request.body, { abortEarly: false });
+        } catch (err) {
+            console.log(err);
+            return response.status(400).json({ error: err.errors });
+        }
+
+
+        const { name, price, category_id, offer } = request.body
+        const { filename } = request.file
+
+
+        const newProduct = await Product.create({
+            name,
+            price,
+            category_id,
+            path: filename,
+            offer,
+        });
+
+        return response.status(201).json(product);
+
+    }
+
+    async update(request, response) {
+        const schema = Yup.object({
             name: Yup.string(),
-            price: Yup.number().positive(),
+            price: Yup.number(),
             category_id: Yup.number(),
             offer: Yup.boolean(),
 
@@ -17,11 +50,12 @@ class ProductController {
             schema.validateSync(request.body, { abortEarly: false });
         } catch (err) {
             console.log(err);
-            return response.status(400).json({ error: "Validation fails", messages: err.errors });
+            return response.status(400).json({ error: err.errors });
         }
 
 
-        const { name, price, category_id, offer } = request.body
+        const { name, price, category_id, offer } = request.body;
+        const { id } = request.params;
 
         let path;
         if (request.file) {
@@ -31,18 +65,17 @@ class ProductController {
 
 
 
-        const updateProduct = await Product.update({
+       await Product.update({
             name,
             price,
             category_id,
             path,
             offer,
-
-        },
-        {where: { id: request.params.id }
+        }, {
+            where: { id, },
         });
 
-        return response.status(201).json(updateProduct);
+        return response.status(201).json({ message: 'Product updated successfully' });
 
     }
 
@@ -53,7 +86,7 @@ class ProductController {
                 include: {
                     model: Category,
                     as: 'category',
-                    attributes: ['id', 'name', 'price'],
+                    attributes: ['id', 'name'],
                 }
             }
         );
