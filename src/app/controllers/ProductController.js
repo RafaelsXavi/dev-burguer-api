@@ -22,7 +22,11 @@ class ProductController {
 
 
         const { name, price, category_id, offer } = request.body
-        const { filename } = request.file
+        const file = request.files.find(f => f.fieldname === 'file');
+        if (!file) {
+            return response.status(400).json({ error: 'File is required' });
+        }
+        const { filename } = file;
 
 
         const newProduct = await Product.create({
@@ -58,9 +62,9 @@ class ProductController {
         const { id } = request.params;
 
         let path;
-        if (request.file) {
-            const { filename } = request.file;
-            path = filename;
+        const file = request.files.find(f => f.fieldname === 'file');
+        if (file) {
+            path = file.filename;
         }
 
 

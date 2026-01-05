@@ -27,19 +27,31 @@ routes.use(authMiddleware);
 routes.post(
     '/products',
      adminMiddleware,
-     upload.single('file'), 
+     upload.any(),
      ProductController.store,
     );
 routes.put(
     '/products/:id',
      adminMiddleware,
-     upload.single('file'), 
+     upload.any(),
      ProductController.update,
     );
 
 routes.get('/products', ProductController.index);
 
-routes.post('/categories', adminMiddleware, CategoryController.store);
+routes.post(
+    '/categories',
+    adminMiddleware,
+    upload.any(),
+    CategoryController.store,
+);
+
+routes.put(
+    '/categories/:id',
+    adminMiddleware,
+    upload.any(),
+    CategoryController.update,
+);// PUT -> /CATEGORIES/ID
 
 routes.get('/categories', CategoryController.index);
 

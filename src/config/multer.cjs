@@ -10,4 +10,5 @@ module.exports = {
             return callback(null, uniqueName);
         },
     }),
+    // fileFilter removed to allow any file type for now
 };
