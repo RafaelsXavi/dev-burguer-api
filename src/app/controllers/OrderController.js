@@ -2,6 +2,7 @@
 import * as Yup from 'yup';
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
+import Order from '../schemas/Order.js';
 
 class OrderController {
 
@@ -29,7 +30,7 @@ class OrderController {
 
         // [{ id: 1, quantity: 2}, { id: 2, quantity: 3}] = > [id]
 
-        const productsIds = products.map(product => product.id);
+        const productsIds = products.map((product) => product.id);
 
 
         const findedProducts = await Product.findAll({
@@ -52,7 +53,8 @@ class OrderController {
                 name: product.name,
                 price: product.price,
                 url: product.url,
-                Category: product.category.name
+                category: product.category.name,
+                quantity,
             }
             return newProduct
         })
@@ -70,9 +72,50 @@ class OrderController {
 
         }
 
+        const newOrder = await Order.create(order);
 
-        return response.status(201).json(order);
+        return response.status(201).json(newOrder);
 
+    }
+    async update(request, response) {
+
+        const schema = Yup.object({
+
+            status: Yup.string()
+                .required()
+
+        });
+
+        try {
+            schema.validateSync(request.body, { abortEarly: false, strict: true });
+        } catch (err) {
+            console.log(err);
+            return response.status(400).json({ error: err.errors });
+        }
+
+
+
+        const { status } = request.body.status;
+        const { id } = request.params;
+
+
+        try {
+            await Order.updateOne({_id: id}, {status} );
+        } catch (err) {
+            return response.status(400).json({ error: err.message });
+
+        }
+
+        return response
+        .status(200)
+        .json({message: 'Order status updated successfully'
+
+        });
+    }
+    async index(_request, response) {
+
+        const orders = await Order.find();
+        return response.status(200).json(orders);
     }
 }
 export default new OrderController();

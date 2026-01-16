@@ -1,17 +1,14 @@
 import { Router } from 'express';
-import { createRequire } from 'module';
-import UserController from "./app/controllers/UserController.js";
-import SessionController from './app/controllers/SessionController.js';
-import ProductController from './app/controllers/ProductController.js';
-import CategoryController from './app/controllers/CategoryController.js';
 import multer from 'multer';
-import app from './app.js';
-import authMiddleware from './middlewares/auth.js';
-import adminMiddleware from './middlewares/admin.js';
+import CategoryController from './app/controllers/CategoryController.js';
 import OrderController from './app/controllers/OrderController.js';
+import ProductController from './app/controllers/ProductController.js';
+import SessionController from './app/controllers/SessionController.js';
+import UserController from "./app/controllers/UserController.js";
+import adminMiddleware from './app/middlewares/admin.js';
+import authMiddleware from './app/middlewares/auth.js';
+import multerConfig from './config/multer.cjs';
 
-const require = createRequire(import.meta.url);
-const multerConfig = require('./config/multer.cjs');
 
 const routes = new Router();
 
@@ -27,16 +24,16 @@ routes.use(authMiddleware);
 
 routes.post(
     '/products',
-     adminMiddleware,
-     upload.any(),
-     ProductController.store,
-    );
+    adminMiddleware,
+    upload.any(),
+    ProductController.store,
+);
 routes.put(
     '/products/:id',
-     adminMiddleware,
-     upload.any(),
-     ProductController.update,
-    );
+    adminMiddleware,
+    upload.any(),
+    ProductController.update,
+);
 
 routes.get('/products', ProductController.index);
 
@@ -47,20 +44,20 @@ routes.post(
     CategoryController.store,
 );
 
-routes.put(
-    '/categories/:id',
-    adminMiddleware,
-    upload.any(),
-    CategoryController.update,
-);// PUT -> /CATEGORIES/ID
+routes.put('/categories/:id',adminMiddleware,upload.any(),CategoryController.update);
+// PUT -> /CATEGORIES/ID
 
-routes.post(
-    '/orders',
-    adminMiddleware,
-    OrderController.store,
-)
 
 routes.get('/categories', CategoryController.index);
+
+
+routes.post('/orders',OrderController.store)
+
+routes.get('/orders',OrderController.index)
+
+routes.put('/orders/:id',adminMiddleware,OrderController.update);
+
+
 
 export default routes;
 
