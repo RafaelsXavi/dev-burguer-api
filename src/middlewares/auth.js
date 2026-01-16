@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import authConfig from './../config/auth.js'
 
-
 const authMiddleware = (req, res, next) => {
 
     console.log(req.headers);
@@ -11,7 +10,7 @@ const authMiddleware = (req, res, next) => {
         return res.status(401).json({ error: 'Token not provided' });
     }
 
-    const [, token] = authToken.split(' ');
+    const token = authToken.split(' ')[1];
 
     try {
         jwt.verify(token, authConfig.secret, (error, decoded) => {
@@ -20,6 +19,7 @@ const authMiddleware = (req, res, next) => {
             }
 
             req.userId = decoded.id;
+            req.userName = decoded.name;
             req.userIsAdmin = decoded.admin;
             
         });

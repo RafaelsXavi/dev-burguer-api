@@ -8,6 +8,7 @@ import multer from 'multer';
 import app from './app.js';
 import authMiddleware from './middlewares/auth.js';
 import adminMiddleware from './middlewares/admin.js';
+import OrderController from './app/controllers/OrderController.js';
 
 const require = createRequire(import.meta.url);
 const multerConfig = require('./config/multer.cjs');
@@ -52,6 +53,12 @@ routes.put(
     upload.any(),
     CategoryController.update,
 );// PUT -> /CATEGORIES/ID
+
+routes.post(
+    '/orders',
+    adminMiddleware,
+    OrderController.store,
+)
 
 routes.get('/categories', CategoryController.index);
 
