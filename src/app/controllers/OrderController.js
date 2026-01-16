@@ -42,7 +42,11 @@ class OrderController {
                 attributes: ['name'],
             }
         });
-        const mapedProducts = findedProducts.map(product => ({
+        const mapedProducts = findedProducts.map(product => {
+
+            const quantity = products.find(p => p.id === product.id).quantity;
+
+
             const newProduct = {
                 id: product.id,
                 name: product.name,
@@ -62,6 +66,7 @@ class OrderController {
                 name: userName,
             },
             products: mapedProducts,
+            status: 'Pedido realizado'
 
         }
 
