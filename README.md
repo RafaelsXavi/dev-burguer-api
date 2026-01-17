@@ -9,6 +9,8 @@ API para gerenciamento de um sistema de pedidos de hambúrgueres, incluindo usu�
 - Processamento de pedidos
 - Upload de imagens com multer
 
+=======
+
 ## 🛠️ Tecnologias
 
 - Node.js
