@@ -3,7 +3,9 @@
 API para gerenciamento de um sistema de pedidos de hambúrgueres, incluindo usuários, produtos, categorias e pedidos.
 
 ## 📸 Screenshot
-[Imagem da API funcionando]
+
+<img width="1340" height="578" alt="image" src="https://github.com/user-attachments/assets/07487791-5428-4de2-b807-10e74df63f22" />
+
 
 ## 🛠️ Tecnologias
 
