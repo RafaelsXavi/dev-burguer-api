@@ -2,8 +2,12 @@
 
 API para gerenciamento de um sistema de pedidos de hambúrgueres, incluindo usuários, produtos, categorias e pedidos.
 
-## 📸 Screenshot
-[Imagem da API funcionando]
+## � Funcionalidades
+
+- Gerenciamento de usuários e autenticação
+- CRUD de produtos e categorias
+- Processamento de pedidos
+- Upload de imagens com multer
 
 ## 🛠️ Tecnologias
 
