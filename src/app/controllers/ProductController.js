@@ -7,7 +7,7 @@ class ProductController {
     async store(request, response) {
         const schema = Yup.object({
             name: Yup.string().required(),
-            price: Yup.number().pequired(),
+            price: Yup.number().required(),
             category_id: Yup.number().required(),
             offer: Yup.boolean()
 
@@ -37,7 +37,7 @@ class ProductController {
             offer,
         });
 
-        return response.status(201).json(product);
+        return response.status(201).json(newProduct);
 
     }
 
