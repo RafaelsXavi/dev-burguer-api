@@ -1,4 +1,3 @@
-import { request } from 'express';
 import * as Yup from 'yup';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
@@ -11,7 +10,7 @@ class SessionController {
       password: Yup.string().required().min(6),
     });
 
-    const isValide = await schema.isValid(request.body, {
+    const isValide = await schema.isValid(req.body, {
       abortEarly: false,
       strict: true,
     });
