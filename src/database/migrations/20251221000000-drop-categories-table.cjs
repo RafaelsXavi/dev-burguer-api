@@ -6,9 +6,9 @@ module.exports = {
     // First, remove the foreign key constraint from products table
     await queryInterface.removeConstraint(
       'products',
-      'products_category_id_fkey'
+      'products_category_id_fkey',
     );
-    
+
     // Then drop the categories table
     await queryInterface.dropTable('categories');
   },
@@ -39,5 +39,5 @@ module.exports = {
         allowNull: false,
       },
     });
-  }
+  },
 };

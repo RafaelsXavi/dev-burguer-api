@@ -3,7 +3,6 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-
     await queryInterface.addColumn('products', 'category-id', {
       type: Sequelize.INTEGER,
       references: {
@@ -11,14 +10,11 @@ module.exports = {
         key: 'id',
       },
       onUpdate: 'CASCADE',
-      onDelete: 'SET NULL'
+      onDelete: 'SET NULL',
     });
-
   },
 
   async down(queryInterface) {
-
     await queryInterface.removeColumn('products', 'category-id');
-
-  }
+  },
 };

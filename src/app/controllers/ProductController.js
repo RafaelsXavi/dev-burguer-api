@@ -1,103 +1,100 @@
-import * as Yup from 'yup';
-import Product from '../models/Product.js';
 import Category from '../models/Category.js';
+import Product from '../models/Product.js';
 
 class ProductController {
+  async store(request, response) {
+    const { name, price, category_id, offer = false } = request.body;
 
-    async store(request, response) {
-        const schema = Yup.object({
-            name: Yup.string().required(),
-            price: Yup.number().required(),
-            category_id: Yup.number().required(),
-            offer: Yup.boolean()
-
-        });
-
-        try {
-            schema.validateSync(request.body, { abortEarly: false });
-        } catch (err) {
-            console.log(err);
-            return response.status(400).json({ error: err.errors });
-        }
-
-
-        const { name, price, category_id, offer } = request.body
-        const file = request.files.find(f => f.fieldname === 'file');
-        if (!file) {
-            return response.status(400).json({ error: 'File is required' });
-        }
-        const { filename } = file;
-
-
-        const newProduct = await Product.create({
-            name,
-            price,
-            category_id,
-            path: filename,
-            offer,
-        });
-
-        return response.status(201).json(newProduct);
-
+    const file = request.files?.find((f) => f.fieldname === 'file');
+    if (!file) {
+      return response.status(400).json({
+        error: 'File is required',
+        message: 'Please upload a product image',
+      });
     }
 
-    async update(request, response) {
-        const schema = Yup.object({
-            name: Yup.string(),
-            price: Yup.number(),
-            category_id: Yup.number(),
-            offer: Yup.boolean(),
+    const { filename } = file;
 
-        });
-
-        try {
-            schema.validateSync(request.body, { abortEarly: false });
-        } catch (err) {
-            console.log(err);
-            return response.status(400).json({ error: err.errors });
-        }
-
-
-        const { name, price, category_id, offer } = request.body;
-        const { id } = request.params;
-
-        let path;
-        const file = request.files.find(f => f.fieldname === 'file');
-        if (file) {
-            path = file.filename;
-        }
-
-
-
-       await Product.update({
-            name,
-            price,
-            category_id,
-            path,
-            offer,
-        }, {
-            where: { id, },
-        });
-
-        return response.status(201).json({ message: 'Product updated successfully' });
-
+    // Verify category exists
+    const category = await Category.findByPk(category_id);
+    if (!category) {
+      return response.status(404).json({
+        error: 'Category not found',
+        message: 'The specified category does not exist',
+      });
     }
 
-    async index(_request, response) {
+    const newProduct = await Product.create({
+      name,
+      price,
+      category_id,
+      path: filename,
+      offer,
+    });
 
-        const products = await Product.findAll(
-            {
-                include: {
-                    model: Category,
-                    as: 'category',
-                    attributes: ['id', 'name'],
-                }
-            }
-        );
+    return response.status(201).json(newProduct);
+  }
 
+  async update(request, response) {
+    const { name, price, category_id, offer } = request.body;
+    const { id } = request.params;
 
-
-        return response.status(201).json(products);
+    // Verify product exists
+    const product = await Product.findByPk(id);
+    if (!product) {
+      return response.status(404).json({
+        error: 'Product not found',
+        message: 'The specified product does not exist',
+      });
     }
+
+    // Verify category exists if provided
+    if (category_id) {
+      const category = await Category.findByPk(category_id);
+      if (!category) {
+        return response.status(404).json({
+          error: 'Category not found',
+          message: 'The specified category does not exist',
+        });
+      }
+    }
+
+    let path;
+    const file = request.files?.find((f) => f.fieldname === 'file');
+    if (file) {
+      path = file.filename;
+    }
+
+    await Product.update(
+      {
+        name,
+        price,
+        category_id,
+        path,
+        offer,
+      },
+      {
+        where: { id },
+      },
+    );
+
+    return response.status(200).json({
+      message: 'Product updated successfully',
+      product: { id, name, price, category_id, path, offer },
+    });
+  }
+
+  async index(_request, response) {
+    const products = await Product.findAll({
+      include: {
+        model: Category,
+        as: 'category',
+        attributes: ['id', 'name'],
+      },
+    });
+
+    return response.status(200).json(products);
+  }
 }
+
 export default new ProductController();

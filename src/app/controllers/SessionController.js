@@ -1,66 +1,52 @@
-import * as Yup from 'yup';
-import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authConfig from '../../config/auth.js';
+import User from '../models/User.js';
+
 class SessionController {
   async store(req, res) {
-    const schema = Yup.object({
-      email: Yup.string().email().required(),
-      password: Yup.string().required().min(6),
-    });
-
-    const isValide = await schema.isValid(req.body, {
-      abortEarly: false,
-      strict: true,
-    });
-
-    const emailOurPasswordIncorrect = () => {
-      return res
-        .status(400)
-        .json({ error: "Validation fails" });
-    }
-
-    if (!isValide) { return emailOurPasswordIncorrect(); }
-
     const { email, password } = req.body;
 
-
-    const existingUser = await User.findOne({
-      where: { email }
+    const user = await User.findOne({
+      where: { email },
     });
 
-    if (!existingUser) { return emailOurPasswordIncorrect();}
+    if (!user) {
+      return res.status(401).json({
+        error: 'Authentication failed',
+        message: 'Invalid email or password',
+      });
+    }
 
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      existingUser.password_hash
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        error: 'Authentication failed',
+        message: 'Invalid email or password',
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        admin: user.admin,
+        name: user.name,
+      },
+      process.env.JWT_SECRET || authConfig.secret,
+      {
+        expiresIn: authConfig.expiresIn,
+      },
     );
 
-    if (!isPasswordValid) {return emailOurPasswordIncorrect(); }
-
-const token = jwt.sign(
-  { 
-   id: existingUser.id,
-   admin: existingUser.admin,
-   name: existingUser.name,
-   }, 
-
-   authConfig.secret,
-
-  { 
-    expiresIn: authConfig.expiresIn },)
-
     return res.status(200).json({
-      id: existingUser.id,
-      name: existingUser.name,
-      email: existingUser.email,
-      admin: existingUser.admin,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      admin: user.admin,
       token,
     });
-
   }
 }
 
-export default new SessionController;
+export default new SessionController();
