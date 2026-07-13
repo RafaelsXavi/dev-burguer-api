@@ -87,8 +87,13 @@ class OrderController {
     });
   }
 
-  async index(_request, response) {
-    const orders = await Order.find();
+  async index(request, response) {
+    const { userId, userIsAdmin } = request;
+
+    // If user is admin, return all orders; otherwise, return only user's orders
+    const filter = userIsAdmin ? {} : { 'user.id': userId };
+    
+    const orders = await Order.find(filter);
     return response.status(200).json(orders);
   }
 }

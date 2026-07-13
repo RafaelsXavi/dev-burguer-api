@@ -3,7 +3,7 @@ import Category from '../models/Category.js';
 class CategoryController {
   async store(request, response) {
     const { name } = request.body;
-    const file = request.files.find((f) => f.fieldname === 'file');
+    const file = request.files?.find((f) => f.fieldname === 'file');
 
     if (!file) {
       return response.status(400).json({ error: 'File is required' });
@@ -32,7 +32,7 @@ class CategoryController {
     const { id } = request.params;
 
     let path;
-    const file = request.files.find((f) => f.fieldname === 'file');
+    const file = request.files?.find((f) => f.fieldname === 'file');
     if (file) {
       path = file.filename;
     }

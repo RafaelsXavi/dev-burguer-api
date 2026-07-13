@@ -11,6 +11,7 @@ Este projeto foi recentemente refatorado para seguir padrões de **Senior Softwa
 - **Advanced Error Handling:** Tratamento global de exceções otimizado para `Express 5`, com suporte nativo a erros assíncronos.
 - **Configuração Segura:** Gestão de tokens JWT e conexões de banco de dados via variáveis de ambiente (`.env`).
 - **Code Style:** Padronização rigorosa de código utilizando `Biome`.
+- **User-Specific Order History:** Controle de acesso granular para pedidos - usuários regulares veem apenas seus próprios pedidos, enquanto administradores visualizam todos os pedidos do sistema.
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -60,6 +61,18 @@ Para rodar os testes de integração (ESM):
 ```bash
 node --experimental-vm-modules node_modules/jest/bin/jest.js
 ```
+
+## 🔐 Funcionalidades de Segurança
+
+### User-Specific Order History
+O sistema implementa controle de acesso granular para visualização de pedidos:
+
+- **Usuários Regulares:** Acessam apenas seus próprios pedidos através do endpoint `GET /orders`
+- **Administradores:** Visualizam todos os pedidos do sistema, permitindo gestão completa
+- **Privacidade:** Dados de pedidos de outros usuários são inacessíveis para usuários não-admin
+- **Implementação:** Baseada em middleware de autenticação existente, sem necessidade de mudanças no esquema de banco de dados
+
+Esta funcionalidade melhora a experiência do usuário e a segurança do sistema, garantindo que cada cliente tenha acesso apenas ao seu histórico de pedidos.
 
 ---
 *Desenvolvido com visão crítica e padrões de alta escalabilidade.*

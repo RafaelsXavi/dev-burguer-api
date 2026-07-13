@@ -12,5 +12,12 @@ export const orderStoreSchema = Yup.object({
 });
 
 export const orderUpdateSchema = Yup.object({
-  status: Yup.string().required(),
+  status: Yup.string()
+    .required()
+    .oneOf([
+      'Pedido realizado',
+      'Em preparação',
+      'Entrega em andamento',
+      'Entregue',
+    ]),
 });
